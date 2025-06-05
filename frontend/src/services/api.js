@@ -47,6 +47,14 @@ export const teamAPI = {
   joinTeam: (id) => api.post(`/teams/${id}/join`),
   leaveTeam: (id) => api.post(`/teams/${id}/leave`),
   removeMember: (teamId, userId) => api.delete(`/teams/${teamId}/members/${userId}`),
+  
+  // Team invitation endpoints
+  inviteToTeam: (teamId, email) => api.post(`/teams/${teamId}/invite`, { email }),
+  getTeamInvitations: (teamId) => api.get(`/teams/${teamId}/invitations`),
+  cancelInvitation: (teamId, email) => api.delete(`/teams/${teamId}/invitations/${email}`),
+  verifyInvitation: (token) => api.get(`/teams/invitations/${token}`),
+  acceptInvitation: (token) => api.post(`/teams/invitations/${token}/accept`),
+  declineInvitation: (token) => api.post(`/teams/invitations/${token}/decline`),
 };
 
 // Project Services
@@ -56,6 +64,12 @@ export const projectAPI = {
   getProject: (id) => api.get(`/projects/${id}`),
   updateProject: (id, projectData) => api.put(`/projects/${id}`, projectData),
   deleteProject: (id) => api.delete(`/projects/${id}`),
+  getMyTeamProjects: () => api.get('/projects/myteam'),
+  
+  // Project submission
+  submitProject: (id) => api.post(`/projects/${id}/submit`),
+  addFeedback: (id, feedback) => api.post(`/projects/${id}/feedback`, feedback),
+  updateSubmissionStatus: (id, status) => api.put(`/projects/${id}/status`, { status }),
 };
 
 export default api;
