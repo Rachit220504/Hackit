@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { teamAPI } from '../../services/api';
 import AuthContext from '../../context/AuthContext';
@@ -18,11 +18,7 @@ const TeamDetail = () => {
   const [joining, setJoining] = useState(false);
   const [leaving, setLeaving] = useState(false);
 
-  useEffect(() => {
-    fetchTeam();
-  }, [id]);
-
-  const fetchTeam = async () => {
+  const fetchTeam = useCallback(async () => {
     try {
       setLoading(true);
       const res = await teamAPI.getTeam(id);
@@ -33,7 +29,11 @@ const TeamDetail = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    fetchTeam();
+  }, [id, fetchTeam]);
 
   const refreshInvitations = () => {
     setInvitationRefresh(prev => prev + 1);

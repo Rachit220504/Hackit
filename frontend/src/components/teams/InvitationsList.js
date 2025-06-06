@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { teamAPI } from '../../services/api';
 
 const InvitationsList = ({ teamId, refreshTrigger }) => {
@@ -6,11 +6,7 @@ const InvitationsList = ({ teamId, refreshTrigger }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchInvitations();
-  }, [teamId, refreshTrigger]);
-
-  const fetchInvitations = async () => {
+  const fetchInvitations = useCallback(async () => {
     try {
       setLoading(true);
       const res = await teamAPI.getTeamInvitations(teamId);
@@ -21,7 +17,11 @@ const InvitationsList = ({ teamId, refreshTrigger }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [teamId]);
+
+  useEffect(() => {
+    fetchInvitations();
+  }, [teamId, refreshTrigger, fetchInvitations]);
 
   const handleCancelInvitation = async (email) => {
     if (!window.confirm(`Are you sure you want to cancel the invitation to ${email}?`)) {

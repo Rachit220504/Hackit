@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import AuthContext from '../../context/AuthContext';
 import { teamAPI } from '../../services/api';
@@ -12,19 +12,16 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchMyTeams();
-  }, [user]);
-
-  const fetchMyTeams = async () => {
+  // Memoize the fetchMyTeams function using useCallback
+  const fetchMyTeams = useCallback(async () => {
     try {
       setLoading(true);
       const res = await teamAPI.getTeams();
       
       // Filter teams where user is a member or leader
       const userTeams = res.data.filter(team => 
-        team.members.some(member => member._id === user._id) || 
-        (team.leader && team.leader._id === user._id)
+        team.members.some(member => member._id === user?._id) || 
+        (team.leader && team.leader._id === user?._id)
       );
       
       setMyTeams(userTeams);
@@ -34,7 +31,11 @@ const Dashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    fetchMyTeams();
+  }, [user, fetchMyTeams]);
 
   return (
     <div className="container mx-auto px-4 py-8">

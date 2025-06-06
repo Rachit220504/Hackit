@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const UserSchema = new mongoose.Schema({
   name: {
@@ -12,34 +13,33 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please add an email'],
     unique: true,
-    match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please add a valid email'],
+    match: [
+      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+      'Please add a valid email',
+    ],
   },
   password: {
     type: String,
-    required: [true, 'Please add a password'],
     minlength: [6, 'Password must be at least 6 characters'],
     select: false,
   },
   role: {
     type: String,
-    enum: ['user', 'organizer', 'admin'],
+    enum: ['user', 'organizer', 'admin', 'judge'],
     default: 'user',
-  },
-  avatar: {
-    type: String,
   },
   bio: {
     type: String,
     maxlength: [500, 'Bio cannot be more than 500 characters'],
   },
-  skills: {
-    type: [String],
+  skills: [String],
+  avatar: String,
+  github: {
+    id: String,
+    username: String
   },
-  githubId: {
-    type: String,
-  },
-  googleId: {
-    type: String,
+  google: {
+    id: String
   },
   resetPasswordToken: String,
   resetPasswordExpire: Date,
@@ -51,8 +51,8 @@ const UserSchema = new mongoose.Schema({
 
 // Encrypt password using bcrypt
 UserSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) {
-    next();
+  if (!this.isModified('password') || !this.password) {
+    return next();
   }
 
   const salt = await bcrypt.genSalt(10);
@@ -60,8 +60,16 @@ UserSchema.pre('save', async function (next) {
   next();
 });
 
-// Match entered password to hashed password in database
+// Sign JWT and return
+UserSchema.methods.getSignedJwtToken = function () {
+  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+    expiresIn: '30d',
+  });
+};
+
+// Match user entered password to hashed password in database
 UserSchema.methods.matchPassword = async function (enteredPassword) {
+  if (!this.password) return false;
   return await bcrypt.compare(enteredPassword, this.password);
 };
 

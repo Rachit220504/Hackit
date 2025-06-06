@@ -163,6 +163,22 @@ exports.oauthSuccess = (req, res) => {
   }
 };
 
+// @desc   Handle OAuth callback
+// @route  GET /api/auth/:provider/callback
+// @access Public
+exports.oauthCallback = (req, res) => {
+  try {
+    // Generate JWT token
+    const token = req.user.getSignedJwtToken();
+    
+    // Redirect to frontend with token
+    res.redirect(`${process.env.FRONTEND_URL}/oauth-callback?token=${token}`);
+  } catch (error) {
+    console.error('OAuth callback error:', error);
+    res.redirect(`${process.env.FRONTEND_URL}/login?error=Authentication%20failed`);
+  }
+};
+
 // @desc    Forgot password
 // @route   POST /api/auth/forgot-password
 // @access  Public
@@ -252,6 +268,39 @@ exports.resetPassword = async (req, res) => {
       token,
     });
     
+  } catch (error) {
+    res.status(500).json({
+      message: 'Server error',
+      error: error.message,
+    });
+  }
+};
+
+// @desc    Update user profile
+// @route   PUT /api/auth/profile
+// @access  Private
+exports.updateProfile = async (req, res) => {
+  try {
+    const { name, bio, skills } = req.body;
+    
+    // Find user
+    const user = await User.findById(req.user.id);
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    // Update fields
+    if (name) user.name = name;
+    if (bio !== undefined) user.bio = bio;
+    if (skills) user.skills = skills;
+    
+    await user.save();
+    
+    // Return updated user without password
+    const updatedUser = await User.findById(req.user.id).select('-password');
+    
+    res.json(updatedUser);
   } catch (error) {
     res.status(500).json({
       message: 'Server error',
