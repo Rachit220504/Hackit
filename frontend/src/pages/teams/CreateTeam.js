@@ -7,11 +7,13 @@ const CreateTeam = () => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
+    maxMembers: 5,
+    skillsNeeded: '',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const { name, description } = formData;
+  const { name, description, maxMembers, skillsNeeded } = formData;
 
   const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -23,7 +25,19 @@ const CreateTeam = () => {
     setError(null);
 
     try {
-      const res = await teamAPI.createTeam(formData);
+      // Convert comma-separated skills to array
+      const skillsArray = skillsNeeded
+        ? skillsNeeded.split(',').map(skill => skill.trim()).filter(Boolean)
+        : [];
+
+      const teamData = {
+        name,
+        description,
+        maxMembers: parseInt(maxMembers, 10),
+        skillsNeeded: skillsArray,
+      };
+
+      const res = await teamAPI.createTeam(teamData);
       navigate(`/teams/${res.data._id}`);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to create team');
@@ -66,7 +80,7 @@ const CreateTeam = () => {
               />
             </div>
 
-            <div className="mb-6">
+            <div className="mb-4">
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="description">
                 Description
               </label>
@@ -79,6 +93,45 @@ const CreateTeam = () => {
                 placeholder="Describe your team and what you're looking for"
                 rows="4"
               ></textarea>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="maxMembers">
+                Maximum Team Size
+              </label>
+              <select
+                id="maxMembers"
+                name="maxMembers"
+                value={maxMembers}
+                onChange={onChange}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              >
+                <option value="2">2 members</option>
+                <option value="3">3 members</option>
+                <option value="4">4 members</option>
+                <option value="5">5 members</option>
+                <option value="6">6 members</option>
+                <option value="7">7 members</option>
+                <option value="8">8 members</option>
+              </select>
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="skillsNeeded">
+                Skills Needed (comma separated)
+              </label>
+              <input
+                type="text"
+                id="skillsNeeded"
+                name="skillsNeeded"
+                value={skillsNeeded}
+                onChange={onChange}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                placeholder="e.g. React, Node.js, UI/UX Design"
+              />
+              <p className="text-sm text-gray-500 mt-1">
+                List skills you're looking for in team members
+              </p>
             </div>
 
             <div className="flex items-center justify-between">

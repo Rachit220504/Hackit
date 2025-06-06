@@ -29,6 +29,13 @@ import TeamsList from './pages/teams/TeamsList';
 import TeamDetail from './pages/teams/TeamDetail';
 import CreateTeam from './pages/teams/CreateTeam';
 import EditTeam from './pages/teams/EditTeam';
+import InvitationResponse from './pages/teams/InvitationResponse';
+
+// Project Pages
+import ProjectsList from './pages/projects/ProjectsList';
+import ProjectDetail from './pages/projects/ProjectDetail';
+import CreateProject from './pages/projects/CreateProject';
+import EditProject from './pages/projects/EditProject';
 
 // Admin Pages
 import UserManagement from './pages/admin/UserManagement';
@@ -54,12 +61,21 @@ function App() {
               <Route path="/teams" element={<TeamsList />} />
               <Route path="/teams/:id" element={<TeamDetail />} />
               
+              {/* Team Invitation */}
+              <Route path="/teams/invite/:token" element={<InvitationResponse />} />
+              
+              {/* Project Routes */}
+              <Route path="/projects" element={<ProjectsList />} />
+              <Route path="/projects/:id" element={<ProjectDetail />} />
+              
               {/* Protected Routes */}
               <Route element={<ProtectedRoute />}>
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/teams/create" element={<CreateTeam />} />
                 <Route path="/teams/:id/edit" element={<EditTeam />} />
+                <Route path="/projects/create" element={<CreateProject />} />
+                <Route path="/projects/:id/edit" element={<EditProject />} />
               </Route>
               
               {/* Admin Routes */}

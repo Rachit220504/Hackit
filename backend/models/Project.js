@@ -35,6 +35,38 @@ const ProjectSchema = new mongoose.Schema({
     ref: 'Team',
     required: true,
   },
+  submissionStatus: {
+    type: String,
+    enum: ['draft', 'submitted', 'approved', 'rejected'],
+    default: 'draft',
+  },
+  submissionDate: {
+    type: Date,
+  },
+  feedbacks: [
+    {
+      comment: {
+        type: String,
+        required: true,
+      },
+      givenBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  ],
+  screenshots: [String],
+  videoUrl: {
+    type: String,
+    match: [
+      /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/,
+      'Please use a valid URL',
+    ],
+  },
   createdAt: {
     type: Date,
     default: Date.now,
