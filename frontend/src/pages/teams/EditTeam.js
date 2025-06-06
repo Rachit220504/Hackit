@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { teamAPI } from '../../services/api';
 
@@ -16,11 +16,8 @@ const EditTeam = () => {
 
   const { name, description } = formData;
 
-  useEffect(() => {
-    fetchTeam();
-  }, [id]);
-
-  const fetchTeam = async () => {
+  // Memoize the fetchTeam function using useCallback
+  const fetchTeam = useCallback(async () => {
     try {
       setLoading(true);
       const res = await teamAPI.getTeam(id);
@@ -34,7 +31,11 @@ const EditTeam = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    fetchTeam();
+  }, [id, fetchTeam]);
 
   const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

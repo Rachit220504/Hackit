@@ -79,9 +79,15 @@ HackIT is a comprehensive hackathon management platform built with the MERN stac
 ## Deployment Architecture
 - Frontend: Static hosting (Netlify, Vercel, or similar)
 - Backend: Node.js hosting (Heroku, DigitalOcean, AWS, etc.)
-- Database: MongoDB Atlas or self-hosted MongoDB
+- Database: MongoDB Atlas (cloud-hosted MongoDB service)
 - Environment variables for configuration
 - CORS enabled for secure cross-origin requests
+
+### MongoDB Atlas Configuration
+- Database hosted on MongoDB Atlas cloud service
+- Connection via secure connection string with username/password authentication
+- Network access limited to application server IPs for enhanced security
+- Database user with appropriate read/write permissions
 
 ## Future Enhancements
 - Real-time notifications using Socket.io

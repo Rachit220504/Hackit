@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { projectAPI } from '../../services/api';
 
@@ -20,11 +20,8 @@ const EditProject = () => {
 
   const { title, description, techStack, repoUrl, demoUrl, videoUrl } = formData;
 
-  useEffect(() => {
-    fetchProject();
-  }, [id]);
-
-  const fetchProject = async () => {
+  // Memoize the fetchProject function using useCallback
+  const fetchProject = useCallback(async () => {
     try {
       setLoading(true);
       const res = await projectAPI.getProject(id);
@@ -42,7 +39,11 @@ const EditProject = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    fetchProject();
+  }, [id, fetchProject]);
 
   const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

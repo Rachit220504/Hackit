@@ -74,6 +74,17 @@ npm run dev
 npm start
 ```
 
+## MongoDB Atlas Setup
+
+This application uses MongoDB Atlas as the database. To set up:
+
+1. Create a MongoDB Atlas account at [https://www.mongodb.com/cloud/atlas](https://www.mongodb.com/cloud/atlas)
+2. Create a new cluster (the free tier is sufficient for development)
+3. Set up a database user with read/write access
+4. Configure network access (allow access from your IP or anywhere for development)
+5. Get your connection string by clicking "Connect" on your cluster
+6. Replace the placeholder in the `.env` file with your actual connection string:
+
 ## Development Roadmap
 
 - Days 1-2: Project Setup & Planning

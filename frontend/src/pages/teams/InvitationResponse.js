@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { teamAPI } from '../../services/api';
 import AuthContext from '../../context/AuthContext';
@@ -13,13 +13,8 @@ const InvitationResponse = () => {
   const [error, setError] = useState(null);
   const [responseStatus, setResponseStatus] = useState(null);
   
-  useEffect(() => {
-    if (token) {
-      fetchInvitationDetails();
-    }
-  }, [token]);
-  
-  const fetchInvitationDetails = async () => {
+  // Memoize the fetchInvitationDetails function using useCallback
+  const fetchInvitationDetails = useCallback(async () => {
     try {
       setLoading(true);
       const res = await teamAPI.verifyInvitation(token);
@@ -30,7 +25,13 @@ const InvitationResponse = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
+  
+  useEffect(() => {
+    if (token) {
+      fetchInvitationDetails();
+    }
+  }, [token, fetchInvitationDetails]);
   
   const handleAccept = async () => {
     try {
